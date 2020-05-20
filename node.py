@@ -5,7 +5,8 @@ import statistics
 black = (0, 0, 0)
 
 class node:
-    def __init__(self, nSize, pos = [0,0], speed=0, angle=0, mWander = 15, color=black):
+    
+    def __init__(self, nSize, pos = [0,0], speed=0, angle=0, color=black):
         self.pos = pos
         self.speed = speed
         self.nSize = nSize
@@ -15,7 +16,6 @@ class node:
         self.edgeProtectionComplete = False
         self.color = color
         self.og_color = color
-        self.maxWander = mWander
         self.demandedAngles = []
         self.restricted = 0
     
@@ -46,7 +46,7 @@ class node:
     def updatePosistion(self):
         self.addAntiEdge()
         if(self.restricted==0):
-            self.requestAngleChange(self.angle)
+            self.requestAngleChange(self.angle, onlyEmpty=True)
             self.updateAngle(self.pickNewAngle())
         else:
             self.clearAngleRequests()
@@ -74,14 +74,16 @@ class node:
             return(True)
         return(False)
 
-    def requestAngleChange(self, angle, votes=1):
-        for v in range(0, votes):
+    def requestAngleChange(self, angle, onlyEmpty=False):
+        if((onlyEmpty == False) or (not self.demandedAngles)):
             self.demandedAngles.append(angle)
 
     def clearAngleRequests(self):
         self.demandedAngles = []
 
     def capAngleChange(self, newAngle):
+        if(self.maxAng >= 360):
+            return(newAngle)
         delta = newAngle - self.angle
         addAngle = min([abs(delta), self.maxAng])
         s = math.copysign(1, delta)

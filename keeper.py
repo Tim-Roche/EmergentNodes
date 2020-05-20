@@ -13,6 +13,10 @@ class keeper:
         self.c_dis = 0
         self.a_dis = 0
         self.ang_dis = 0
+        self.lock_clustering = False
+        self.lock_avoidance = False
+        self.lock_angleMatching = False
+        self.lock_maxAngle = False
         self.safetyBounds = safetyBounds
 
     #Debugging #################
@@ -114,6 +118,8 @@ class keeper:
 
     ## CLUSTERING #################
     def enableClustering(self, distance):
+        if(self.lock_clustering):
+            return
         if(distance < 0):
             distance = 0
 
@@ -141,6 +147,9 @@ class keeper:
 
     ## AVOIDANCE 
     def enableAvoidance(self, distance):
+        if(self.lock_avoidance):
+            return
+
         if(distance < 0):
             distance = 0
 
@@ -153,6 +162,9 @@ class keeper:
 
     ## Angle Matching
     def enableAngleMatching(self, distance):
+        if(self.lock_angleMatching):
+            return
+
         if(distance < 0):
             distance = 0
         
@@ -165,3 +177,11 @@ class keeper:
             for i in range(0,len(listing)):
                 angles.append(listing[i][2])
             node.requestAngleChange(statistics.median(angles))
+
+    #Match Angle
+    def enableMaxAngle(self, maxAngle):
+        if(self.lock_maxAngle):
+            return
+        
+        for node in self.nodes:
+            node.maxAng = maxAngle
